@@ -1,0 +1,522 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const recipes = await getCollection('recipes');
+  return recipes.map((recipe) => ({
+    params: { slug: recipe.id },
+    props: { recipe },
+  }));
+}
+
+interface Props {
+  recipe: CollectionEntry<'recipes'>;
+}
+
+const { recipe } = Astro.props;
+const {
+  title,
+  description,
+  tags,
+  date,
+  image,
+  imageAlt,
+  pdf,
+  meta,
+  prepTime,
+  cookTime,
+  totalTime,
+  recipeYield,
+  ingredientGroups,
+  steps,
+  notes,
+} = recipe.data;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Recipe',
+  name: title,
+  description,
+  author: { '@type': 'Person', name: 'Carter Cripe' },
+  datePublished: date.toISOString().split('T')[0],
+  keywords: tags.join(', '),
+  ...(image && { image: new URL(image, Astro.site).href }),
+  ...(prepTime && { prepTime }),
+  ...(cookTime && { cookTime }),
+  ...(totalTime && { totalTime }),
+  ...(recipeYield && { recipeYield }),
+  recipeIngredient: ingredientGroups.flatMap((group) => group.items),
+  recipeInstructions: steps.map((step) => ({
+    '@type': 'HowToStep',
+    name: step.title,
+    text: step.text,
+  })),
+};
+---
+
+<Base title={`${title} — Chef Carter`} description={description} image={image} type="article">
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+
+  <div class="container">
+    <nav class="nav-header no-print">
+      <a href="/" class="back-btn font-ui">← Back to Directory</a>
+    </nav>
+
+    <header class="recipe-header">
+      <h1 class="recipe-title font-display">{title}</h1>
+      <p class="recipe-description">{description}</p>
+
+      <div class="action-buttons no-print">
+        <a href={pdf} download class="btn btn-primary">↓ Download PDF</a>
+        <button id="cookModeBtn" class="btn btn-secondary" aria-pressed="false" hidden>
+          ☾ Cook Mode: Off
+        </button>
+      </div>
+
+      <div class="recipe-meta">
+        {
+          meta.map((item) => (
+            <div class="meta-item">
+              <span class="meta-label font-ui">{item.label}</span>
+              <span class="meta-value">{item.value}</span>
+            </div>
+          ))
+        }
+      </div>
+    </header>
+
+    {
+      image ? (
+        <img class="featured-image" src={image} alt={imageAlt ?? title} />
+      ) : (
+        <div class="featured-image graph-paper placeholder">
+          <span class="font-ui">Photo coming soon</span>
+        </div>
+      )
+    }
+
+    <div class="recipe-body">
+      <aside class="ingredients-section">
+        <div class="ingredients-header">
+          <h3 class="section-title font-display">Ingredients</h3>
+          <button id="resetIngredients" class="reset-btn font-ui no-print" hidden>
+            Reset
+          </button>
+        </div>
+
+        {
+          ingredientGroups.map((group) => (
+            <div class="ingredient-group">
+              <h4 class="font-ui">{group.name}</h4>
+              <ul class="ingredient-list">
+                {group.items.map((item) => (
+                  <li class="ingredient-item">
+                    <label>
+                      <input type="checkbox" class="ingredient-checkbox" />
+                      <span class="ingredient-text">{item}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </aside>
+
+      <main class="instructions-section">
+        <h3 class="section-title font-display">Method</h3>
+
+        {
+          steps.map((step, i) => (
+            <div class="instruction-step">
+              <h4 class="step-title font-ui">
+                {i + 1}. {step.title}
+              </h4>
+              <p class="step-text">{step.text}</p>
+            </div>
+          ))
+        }
+
+        {
+          notes.length > 0 && (
+            <div class="cooks-notes">
+              <h3 class="section-title font-display notes-title">Cook's Notes</h3>
+              {notes.map((note) => (
+                <div class="note-item">
+                  <strong class="font-ui">{note.title}</strong>
+                  {note.text}
+                </div>
+              ))}
+            </div>
+          )
+        }
+      </main>
+    </div>
+
+    <footer class="page-footer no-print">
+      <div class="tags-container">
+        {tags.map((tag) => <span class="pill font-ui">{tag}</span>)}
+      </div>
+      <a href="/" class="back-btn font-ui">← Back to Directory</a>
+    </footer>
+  </div>
+</Base>
+
+<style>
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+
+  .nav-header {
+    margin-bottom: 48px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .back-btn {
+    display: inline-block;
+    color: var(--accent-pink);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .back-btn:hover {
+    color: var(--accent-pink-dark);
+    text-decoration: underline;
+  }
+
+  .recipe-header {
+    margin-bottom: 48px;
+  }
+
+  .recipe-title {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+
+  .recipe-description {
+    font-size: 1.125rem;
+    color: var(--text-soft);
+    max-width: 800px;
+    margin-bottom: 32px;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+
+  .recipe-meta {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 24px 0;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .meta-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .meta-value {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .featured-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    margin-bottom: 48px;
+    border: 1px solid var(--border-color);
+    display: block;
+  }
+
+  .featured-image.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+  }
+
+  .recipe-body {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 48px;
+  }
+
+  .ingredients-section {
+    background-color: var(--panel-bg);
+    padding: 32px;
+    align-self: start;
+    border-top: 4px solid var(--text-primary);
+    position: sticky;
+    top: 24px;
+  }
+
+  .ingredients-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 24px;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+  }
+
+  .ingredients-header .section-title {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .reset-btn {
+    background: none;
+    border: none;
+    color: var(--accent-pink);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .reset-btn:hover {
+    color: var(--accent-pink-dark);
+    text-decoration: underline;
+  }
+
+  .ingredient-group {
+    margin-bottom: 24px;
+  }
+
+  .ingredient-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .ingredient-group h4 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-pink);
+    margin-bottom: 12px;
+  }
+
+  .ingredient-list {
+    list-style: none;
+  }
+
+  .ingredient-item {
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+  }
+
+  .ingredient-item label {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+  }
+
+  .ingredient-checkbox {
+    margin-top: 5px;
+    margin-right: 12px;
+    accent-color: var(--accent-pink);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .ingredient-item:has(.ingredient-checkbox:checked) .ingredient-text {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+  }
+
+  .instructions-section {
+    padding-top: 8px;
+    min-width: 0;
+  }
+
+  .instruction-step {
+    margin-bottom: 32px;
+  }
+
+  .step-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--accent-pink);
+    margin-bottom: 8px;
+  }
+
+  .step-text {
+    font-size: 1rem;
+  }
+
+  .cooks-notes {
+    margin-top: 48px;
+    padding: 32px;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--accent-pink);
+  }
+
+  .notes-title {
+    border: none;
+    margin-bottom: 16px;
+    padding-bottom: 0;
+  }
+
+  .note-item {
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+  }
+
+  .note-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .note-item strong {
+    font-size: 0.75rem;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .page-footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .tags-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 900px) {
+    .container {
+      padding: 24px 16px;
+    }
+    .recipe-body {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .ingredients-section {
+      position: static;
+    }
+    .recipe-meta {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .featured-image {
+      height: 250px;
+    }
+    .recipe-title {
+      font-size: 2.25rem;
+    }
+  }
+</style>
+
+<script>
+  // --- Persistent ingredient checkboxes (localStorage, keyed by page path) ---
+  const storageKey = `cooking:${location.pathname}:ingredients`;
+  const checkboxes = [...document.querySelectorAll<HTMLInputElement>('.ingredient-checkbox')];
+  const resetBtn = document.getElementById('resetIngredients') as HTMLButtonElement;
+
+  function loadChecked(): number[] {
+    try {
+      return JSON.parse(localStorage.getItem(storageKey) ?? '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function saveChecked() {
+    const checked = checkboxes.flatMap((box, i) => (box.checked ? [i] : []));
+    if (checked.length > 0) {
+      localStorage.setItem(storageKey, JSON.stringify(checked));
+    } else {
+      localStorage.removeItem(storageKey);
+    }
+    resetBtn.hidden = checked.length === 0;
+  }
+
+  loadChecked().forEach((i) => {
+    if (checkboxes[i]) checkboxes[i].checked = true;
+  });
+  resetBtn.hidden = checkboxes.every((box) => !box.checked);
+
+  checkboxes.forEach((box) => box.addEventListener('change', saveChecked));
+
+  resetBtn.addEventListener('click', () => {
+    checkboxes.forEach((box) => (box.checked = false));
+    saveChecked();
+  });
+
+  // --- Cook mode: keep the screen awake while cooking ---
+  const cookModeBtn = document.getElementById('cookModeBtn') as HTMLButtonElement;
+  let wakeLock: WakeLockSentinel | null = null;
+  let cookModeOn = false;
+
+  async function acquireWakeLock() {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => {
+        wakeLock = null;
+      });
+    } catch {
+      cookModeOn = false;
+      renderCookMode();
+    }
+  }
+
+  function renderCookMode() {
+    cookModeBtn.setAttribute('aria-pressed', String(cookModeOn));
+    cookModeBtn.textContent = cookModeOn ? '☀ Cook Mode: On' : '☾ Cook Mode: Off';
+  }
+
+  if ('wakeLock' in navigator) {
+    cookModeBtn.hidden = false;
+
+    cookModeBtn.addEventListener('click', async () => {
+      cookModeOn = !cookModeOn;
+      if (cookModeOn) {
+        await acquireWakeLock();
+      } else {
+        await wakeLock?.release();
+        wakeLock = null;
+      }
+      renderCookMode();
+    });
+
+    // The browser releases the lock when the tab is hidden; re-acquire on return.
+    document.addEventListener('visibilitychange', () => {
+      if (cookModeOn && document.visibilityState === 'visible' && !wakeLock) {
+        acquireWakeLock();
+      }
+    });
+  }
+</script>

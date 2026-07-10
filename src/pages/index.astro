@@ -1,0 +1,243 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import RecipeCard from '../components/RecipeCard.astro';
+
+const recipes = (await getCollection('recipes')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const allTags = [...new Set(recipes.flatMap((r) => r.data.tags))].sort();
+
+const description =
+  "Chef Carter's recipe directory — cool recipes worth sharing, free to browse and download.";
+---
+
+<Base title="Chef Carter — Recipes" description={description}>
+  <div class="page">
+    <aside class="sidebar">
+      <h1 class="font-display">Chef Carter</h1>
+      <p class="bio-blurb">
+        While most chefs train in Paris or Tokyo, I honed my craft under the
+        tutelage of the culinary overlords of Saturn's sixth moon. After
+        mastering zero-gravity soufflés, I returned to Earth. I'm no
+        professional, but my recipes are literally out of this world.
+      </p>
+
+      <div class="controls-section">
+        <label class="font-ui" for="searchInput">Search Directory</label>
+        <input
+          type="search"
+          id="searchInput"
+          class="search-bar"
+          placeholder="Enter keyword..."
+        />
+
+        <span class="font-ui controls-label" id="filterLabel">Filter by Category</span>
+        <div class="filter-tabs" role="group" aria-labelledby="filterLabel">
+          <button class="tab-btn font-ui active" data-filter="All">All Recipes</button>
+          {
+            allTags.map((tag) => (
+              <button class="tab-btn font-ui" data-filter={tag}>
+                {tag}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="recipe-grid" id="recipeGrid">
+        {recipes.map((recipe) => <RecipeCard recipe={recipe} />)}
+      </div>
+      <p class="empty-state font-ui" id="emptyState" hidden>
+        No recipes match — try another search.
+      </p>
+    </main>
+  </div>
+</Base>
+
+<style>
+  .page {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 33.333%;
+    max-width: 400px;
+    min-width: 300px;
+    background-color: var(--panel-bg);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid var(--border-color);
+  }
+
+  .sidebar h1 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .bio-blurb {
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+    padding-left: 16px;
+    border-left: 2px solid var(--border-color);
+    color: var(--text-soft);
+  }
+
+  .controls-section label,
+  .controls-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .search-bar {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    background-color: var(--base-bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    margin-bottom: 32px;
+    transition: all 0.2s;
+  }
+
+  .search-bar::placeholder {
+    color: var(--text-secondary);
+  }
+
+  .search-bar:focus {
+    outline: none;
+    border-color: var(--accent-pink);
+    box-shadow: 0 0 0 2px rgba(190, 24, 93, 0.1);
+  }
+
+  .filter-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tab-btn {
+    background-color: var(--base-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 12px 20px;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-btn:hover {
+    background-color: var(--panel-bg);
+  }
+
+  .tab-btn.active {
+    background-color: var(--accent-pink);
+    color: white;
+    border-color: var(--accent-pink);
+  }
+
+  .tab-btn.active:hover {
+    background-color: var(--accent-pink-dark);
+  }
+
+  .main-content {
+    flex-grow: 1;
+    padding: 32px;
+    width: 66.666%;
+    background-color: var(--base-bg);
+  }
+
+  .recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  .empty-state {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    padding: 48px 0;
+    text-align: center;
+  }
+
+  @media (max-width: 900px) {
+    .page {
+      flex-direction: column;
+    }
+    .sidebar {
+      width: 100%;
+      max-width: none;
+      height: auto;
+      position: static;
+      border-right: none;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .main-content {
+      width: 100%;
+    }
+    .filter-tabs {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      flex: 1 1 auto;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+  const emptyState = document.getElementById('emptyState')!;
+  const tabButtons = document.querySelectorAll<HTMLButtonElement>('.tab-btn');
+  const cards = document.querySelectorAll<HTMLAnchorElement>('.recipe-card');
+
+  let currentFilter = 'All';
+
+  function applyFilters() {
+    const query = searchInput.value.toLowerCase();
+    let visible = 0;
+
+    cards.forEach((card) => {
+      const title = card.querySelector('.recipe-title')?.textContent?.toLowerCase() ?? '';
+      const desc = card.querySelector('.recipe-desc')?.textContent?.toLowerCase() ?? '';
+      const tags = (card.dataset.tags ?? '').split(',');
+
+      const matchesSearch = title.includes(query) || desc.includes(query);
+      const matchesTag = currentFilter === 'All' || tags.includes(currentFilter);
+      const show = matchesSearch && matchesTag;
+
+      card.style.display = show ? 'flex' : 'none';
+      if (show) visible++;
+    });
+
+    emptyState.hidden = visible > 0;
+  }
+
+  tabButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentFilter = btn.dataset.filter ?? 'All';
+      tabButtons.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    });
+  });
+
+  searchInput.addEventListener('input', applyFilters);
+</script>

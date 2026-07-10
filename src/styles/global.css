@@ -1,0 +1,167 @@
+/* Light Film Room design system — see style-guide/design.md */
+
+@font-face {
+  font-family: "Druk";
+  font-weight: 400;
+  src: url("/fonts/Druk-Medium-Trial.otf") format("opentype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Druk";
+  font-weight: 700;
+  src: url("/fonts/Druk-Bold-Trial.otf") format("opentype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Druk";
+  font-weight: 900;
+  src: url("/fonts/Druk-Super-Trial.otf") format("opentype");
+  font-display: swap;
+}
+
+:root {
+  --base-bg: #ffffff;
+  --panel-bg: #f4f4f5;
+  --border-color: #d4d4d8;
+  --text-primary: #18181b;
+  --text-secondary: #a1a1aa;
+  --text-soft: #3f3f46;
+  --accent-pink: #be185d;
+  --accent-pink-dark: #9d174d;
+  --font-display: "Druk", "Oswald", "Arial Narrow", sans-serif;
+  --font-ui: "JetBrains Mono", monospace;
+  --font-body: "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-radius: 0; /* Hard corners globally */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background-color: var(--base-bg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.font-ui {
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: var(--accent-pink);
+  color: #ffffff;
+  border-color: var(--accent-pink);
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-pink-dark);
+  border-color: var(--accent-pink-dark);
+}
+
+.btn-secondary {
+  background-color: var(--base-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--panel-bg);
+}
+
+.btn-secondary[aria-pressed="true"] {
+  background-color: var(--text-primary);
+  color: #ffffff;
+  border-color: var(--text-primary);
+}
+
+.btn:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent-pink);
+  outline-offset: 2px;
+}
+
+/* Pills */
+.pill {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Graph paper placeholder (empty image states) */
+.graph-paper {
+  background-image:
+    linear-gradient(to right, #e4e4e7 1px, transparent 1px),
+    linear-gradient(to bottom, #e4e4e7 1px, transparent 1px);
+  background-size: 2rem 2rem;
+  background-color: var(--panel-bg);
+}
+
+/* Print: clean single-column recipe, no chrome */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    padding: 0;
+  }
+  .recipe-body {
+    display: block !important;
+  }
+  .ingredients-section {
+    background: none !important;
+    padding: 0 0 24px 0 !important;
+    border-top: 2px solid #000 !important;
+    margin-bottom: 24px;
+  }
+  .featured-image {
+    display: none !important;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}

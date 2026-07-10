@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cooking.cartercripe.com/sitemap-index.xml
