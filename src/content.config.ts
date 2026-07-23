@@ -7,10 +7,12 @@ const recipes = defineCollection({
     title: z.string(),
     description: z.string(),
     tags: z.array(z.string()),
+    // Optional corner callout on the recipe tile, e.g. "#1 Favorite".
+    badge: z.string().optional(),
     date: z.coerce.date(),
     image: z.string().optional(),
     imageAlt: z.string().optional(),
-    pdf: z.string(),
+    pdf: z.string().optional(),
     // Displayed in the meta strip under the title, in order.
     meta: z.array(z.object({ label: z.string(), value: z.string() })),
     // ISO-8601 durations for schema.org (e.g. PT1H, PT9H).

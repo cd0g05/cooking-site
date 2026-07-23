@@ -1,0 +1,44 @@
+title: Banana Protein Milkshake
+description: >-
+  A five-minute blender shake for using up ripe bananas and hitting a protein
+  number without tasting like a supplement. Frozen fruit keeps it thick
+  without watering it down the way ice does.
+tags:
+  - Quick & Easy
+  - Healthy
+date: 2026-04-10
+meta:
+  - label: Serves
+    value: 1-2
+  - label: Active Time
+    value: ~5 minutes
+  - label: Total Time
+    value: ~5 minutes
+prepTime: PT5M
+totalTime: PT5M
+recipeYield: 1-2 servings
+ingredientGroups:
+  - name: For the shake
+    items:
+      - 1 scoop vanilla or chocolate ice cream
+      - 1 cup frozen mixed fruit
+      - 1 ripe banana
+      - 1 scoop chocolate or vanilla protein powder
+      - 2 cups milk
+      - Water, as needed to thin
+steps:
+  - title: Blend
+    text: >-
+      Combine the ice cream, frozen fruit, banana, protein powder, and milk
+      in a blender. Blend on high until smooth.
+  - title: Adjust and Serve
+    text: >-
+      Add water a splash at a time until the shake reaches your preferred
+      consistency, blending briefly between additions. Pour and serve
+      immediately.
+notes:
+  - title: Riper is better
+    text: >-
+      The riper (more speckled) the banana, the sweeter the shake—freeze
+      overripe bananas in chunks ahead of time so you always have one on
+      hand.

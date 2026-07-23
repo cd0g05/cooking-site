@@ -16,6 +16,9 @@
             "type": "string"
           }
         },
+        "badge": {
+          "type": "string"
+        },
         "date": {
           "anyOf": [
             {
@@ -142,7 +145,6 @@
         "description",
         "tags",
         "date",
-        "pdf",
         "meta",
         "ingredientGroups",
         "steps"

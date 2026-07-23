@@ -68,7 +68,9 @@ const jsonLd = {
       <p class="recipe-description">{description}</p>
 
       <div class="action-buttons no-print">
-        <a href={pdf} download class="btn btn-primary">↓ Download PDF</a>
+        {pdf && (
+          <a href={pdf} download class="btn btn-primary">↓ Download PDF</a>
+        )}
         <button id="cookModeBtn" class="btn btn-secondary" aria-pressed="false" hidden>
           ☾ Cook Mode: Off
         </button>

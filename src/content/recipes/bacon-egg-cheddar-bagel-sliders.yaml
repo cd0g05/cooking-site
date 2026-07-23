@@ -1,0 +1,76 @@
+title: Bacon, Egg & Cheddar Bagel Sliders
+description: >-
+  Bacon, cheddar, and softly scrambled eggs stacked between griddled mini
+  bagels, brushed with an everything-bagel butter and baked until the cheese
+  pulls. It's a hand-held take on the diner breakfast sandwich, built to
+  assemble ahead for a crowd and bake off in one pan.
+tags:
+  - Breakfast
+  - Crowd Pleaser
+date: 2026-06-15
+meta:
+  - label: Serves
+    value: 8-10
+  - label: Active Time
+    value: ~20 minutes
+  - label: Bake
+    value: 10 minutes
+  - label: Total Time
+    value: ~35 minutes
+prepTime: PT20M
+cookTime: PT10M
+totalTime: PT35M
+recipeYield: 8-10 sliders
+ingredientGroups:
+  - name: For the eggs
+    items:
+      - 8 large eggs
+      - "¼ cup whole milk"
+      - Kosher salt and freshly ground black pepper
+  - name: Bacon and assembly
+    items:
+      - 8 slices bacon
+      - 10 mini bagels, halved horizontally
+      - 4 tbsp cream cheese, softened
+      - "1½ cups shredded cheddar"
+      - 2 tbsp thinly sliced chives
+  - name: Everything butter
+    items:
+      - 3 tbsp unsalted butter, melted
+      - 2 tsp dried minced onion
+      - 2 tsp granulated garlic
+      - 2 tsp poppy seeds
+      - 2 tsp toasted sesame seeds
+steps:
+  - title: Cook the Bacon
+    text: >-
+      Preheat the oven to 350°F and grease a 9x13-inch baking dish. Cook the
+      bacon in a large skillet over medium heat, turning occasionally, until
+      crisp, 8-10 minutes. Transfer to a paper-towel-lined plate and pour off
+      all but 1 tablespoon of fat.
+  - title: Scramble the Eggs
+    text: >-
+      Whisk the eggs and milk together until light and frothy. Pour into the
+      same skillet and cook over medium-low heat, stirring often, until just
+      barely set, 2-3 minutes. Season with salt and pepper and stir in the
+      chives, then remove from the heat immediately—the eggs will keep
+      cooking in the residual heat.
+  - title: Build the Sliders
+    text: >-
+      Spread the cream cheese over the bottom halves of the bagels and
+      arrange side by side in the prepared dish. Layer with the scrambled
+      eggs, crumbled bacon, and cheddar, then close with the top halves.
+  - title: Butter and Bake
+    text: >-
+      Brush the tops with melted butter and sprinkle with the dried onion,
+      garlic, poppy seeds, and sesame seeds. Bake until the bagels are
+      toasted and the cheese has melted, about 10 minutes. Serve warm.
+notes:
+  - title: Make ahead
+    text: >-
+      Assemble through the buttering step a day ahead, cover, and
+      refrigerate. Add a few extra minutes to the bake time if going in cold.
+  - title: Swap the cheese
+    text: >-
+      Sharp cheddar is classic here, but pepper jack or gruyère both melt
+      beautifully if you want to change the flavor profile.
